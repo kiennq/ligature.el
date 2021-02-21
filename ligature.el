@@ -191,7 +191,7 @@ For examples, see the commentary in `ligature.el'."
         (if (< (length ligature) 2)
             (error "Ligature `%s' must be 2 characters or longer" ligature)
           (let ((char (elt ligature 0)))
-            (push (list 'literal (substring ligature 1))
+            (push (list 'literal ligature)
                   (alist-get char grouped-ligatures nil nil #'equal)))))
        ;; cons of (CHAR . REGEXP)
        ((consp ligature)
@@ -228,7 +228,7 @@ For examples, see the commentary in `ligature.el'."
                      ;; manually. Furthermore, we prefer regexp to literal
                      ;; matches and want them to appear first.
                      ,@(cl-remove-if 'null (list
-                                            (when regexp-matchers `(group (| ,@regexp-matchers)))
+                                            (when regexp-matchers `(group ,(car group) (| ,@regexp-matchers)))
                                             (when literal-matchers `(group (| ,@literal-matchers)))))))))))))
 
 ;;;###autoload
@@ -262,7 +262,7 @@ The changes are then made buffer-local."
                                     ;; character that we use to define the
                                     ;; beginning of a character table
                                     ;; range.
-                                    `([,(concat "." (cdr rule)) 0 font-shape-gstring]))))))
+                                    `([,(cdr rule) 0 font-shape-gstring]))))))
       (setq ligature--generated-char-tables
             (plist-put ligature--generated-char-tables major-mode table)))
     (unless (eq table composition-function-table)
